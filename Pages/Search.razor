@@ -1,0 +1,19 @@
+@page "/search"
+
+<h1>Database Search</h1>
+
+
+<label for="idSearch">Staff ID </label><input id="idSearch" type="number" min="1" @bind="searchStaffId"><br><br>
+
+<label for="nameSearch">Name </label><input id="nameSearch" type="text" @bind="searchName"><br><br>
+<label for="departmentSearch">Department </label>
+<select id="departmentSearch">
+    <option value="*" @bind="searchDepartment">*</option>
+</select>
+
+@code {
+    private int searchStaffId;
+    private string searchName;
+    private string searchDepartment;
+    
+}
