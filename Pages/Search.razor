@@ -7,8 +7,8 @@
 
 <label for="nameSearch">Name </label><input id="nameSearch" type="text" @bind="searchName"><br><br>
 <label for="departmentSearch">Department </label>
-<select id="departmentSearch">
-    <option value="*" @bind="searchDepartment">*</option>
+<select id="departmentSearch" @bind="searchDepartment">
+    <option value="*" >*</option>
 </select>
 
 @code {
