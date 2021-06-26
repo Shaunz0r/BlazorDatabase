@@ -1,0 +1,61 @@
+﻿@page "/fetchdata"
+
+@using newTest.Data
+@using newTest.Data.newTest
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject PersonnelService PersonnelService
+@inherits OwningComponentBase<PersonnelNew>
+<h1>Personnel</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <h4>Hello, @context.User.Identity.Name!</h4>
+        @if(personnelList == null)
+                {
+                    <p><em>Loading...</em></p>
+        }
+        else
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Job Title</th>
+                                <th>Email</th>
+                                <th>Department ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var person in personnelList)
+                    {
+                            <tr>
+                                <td>@person.Id</td>
+                                <td>@person.FirstName</td>
+                                <td>@person.LastName</td>
+                                <td>@person.JobTitle</td>
+                                <td>@person.Email</td>
+                                <td>@person.DepartmentId</td>
+                            </tr>
+                    }
+                        </tbody>
+                    </table>
+                }
+    </Authorized>
+    <NotAuthorized>
+        <p>You're not signed in.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+    List<PersonnelNew> personnelList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateTask).User;
+        personnelList = await PersonnelService.GetPersonnelAsync(user.Identity.Name);
+    }
+}
