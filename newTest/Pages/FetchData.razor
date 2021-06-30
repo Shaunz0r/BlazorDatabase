@@ -37,10 +37,55 @@
                                 <td>@person.JobTitle</td>
                                 <td>@person.Email</td>
                                 <td>@person.DepartmentId</td>
+                                <td>
+                                    <button class="btn btn-primary" @onclick="(()=>EditPersonnel(person))">
+                                        Edit
+                                    </button>
+                                </td>
                             </tr>
                     }
                         </tbody>
                     </table>
+                    <p>
+                        <button class="btn btn-primary" @onclick="AddNewPersonnel">
+                            Add New Personnel
+                        </button>
+                    </p>
+                    @if(ShowPopup)
+                    {
+                        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h3 class="modal-title">Edit Personnel</h3>
+                                        <button type="button" class="close" @onclick="ClosePopup">
+                                            <span aria-hidden="true">X</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input class="form-control" type="text"
+                                               placeholder="First Name" @bind="objPersonnel.FirstName" />
+                                        <input class="form-control" type="text"
+                                               placeholder="Last Name" @bind="objPersonnel.LastName" />
+                                        <input class="form-control" type="text"
+                                               placeholder="Job Title" @bind="objPersonnel.JobTitle" />
+                                        <input class="form-control" type="text"
+                                               placeholder="Email" @bind="objPersonnel.Email" />
+                                        <input class="form-control" type="text"
+                                               placeholder="Department ID" @bind="objPersonnel.DepartmentId" />
+                                        <br />
+                                        <button class="btn btn-primary" @onclick="SavePersonnel">
+                                            Save
+                                        </button>
+                                        <button class="btn btn-primary" @onclick="DeletePersonnel">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    }
                 }
     </Authorized>
     <NotAuthorized>
@@ -56,6 +101,57 @@
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateTask).User;
+        personnelList = await PersonnelService.GetPersonnelAsync(user.Identity.Name);
+    }
+
+
+    PersonnelNew objPersonnel = new PersonnelNew();
+    bool ShowPopup = false;
+
+    void ClosePopup()
+    {
+        ShowPopup = false;
+
+    }
+    void AddNewPersonnel()
+    {
+        objPersonnel = new PersonnelNew();
+        objPersonnel.Id = 0;
+        ShowPopup = true;
+    }
+    async Task SavePersonnel()
+    {
+        ShowPopup = false;
+        var user = (await AuthenticationStateTask).User;
+        if (objPersonnel.Id == 0)
+        {
+            PersonnelNew objNewPersonnel = new PersonnelNew();
+            objNewPersonnel.FirstName = objPersonnel.FirstName;
+            objNewPersonnel.LastName = objPersonnel.LastName;
+            objNewPersonnel.JobTitle = objPersonnel.JobTitle;
+            objNewPersonnel.Email = objPersonnel.Email;
+            objNewPersonnel.DepartmentId = objPersonnel.DepartmentId;
+            objNewPersonnel.UserName = user.Identity.Name;
+            var result = PersonnelService.CreatePersonnelAsync(objNewPersonnel);
+        }
+        else
+        {
+            var result = PersonnelService.UpdatePersonnelAsync(objPersonnel);
+        }
+        personnelList = await PersonnelService.GetPersonnelAsync(user.Identity.Name);
+    }
+
+    void EditPersonnel(PersonnelNew personnelNew)
+    {
+        objPersonnel = personnelNew;
+        ShowPopup = true;
+    }
+
+    async Task DeletePersonnel()
+    {
+        ShowPopup = false;
+        var user = (await AuthenticationStateTask).User;
+        var result = PersonnelService.DeletePersonnelAsync(objPersonnel);
         personnelList = await PersonnelService.GetPersonnelAsync(user.Identity.Name);
     }
 }

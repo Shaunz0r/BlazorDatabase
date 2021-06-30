@@ -26,7 +26,7 @@ namespace newTest.Data.newTest
 
             modelBuilder.Entity<PersonnelNew>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.HasKey(e => e.Id);
 
                 entity.Property(e => e.Email).IsUnicode(false);
 
